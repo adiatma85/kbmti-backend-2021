@@ -40,6 +40,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('events', 'EventController');
 
     // Event Registration
+    Route::get('event-registrations/pemberkasan/{itemPath}', 'EventRegistrationController@downloadPemberkasan')->name('event-registrations.downloadPemberkasan');
+    Route::get('event-registrations/add-event-registration/{eventId}', 'EventRegistrationController@customCreate')->name('event-registrations.customCreate');
+    Route::post('event-registrations/add-event-registration', 'EventRegistrationController@customStore')->name('event-registrations.customStore');
     Route::delete('event-registrations/destroy', 'EventRegistrationController@massDestroy')->name('event-registrations.massDestroy');
     Route::resource('event-registrations', 'EventRegistrationController');
 

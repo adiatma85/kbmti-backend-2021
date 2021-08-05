@@ -5,7 +5,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    Dashboard
+                    <h2>Admin Dashboard KBMTI Versi 1.0</h2>
                 </div>
 
                 <div class="card-body">
@@ -15,7 +15,7 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    BTW, kalau ada yang ditanyakan atau bagaimana, bisa kontak development RnD ya. Oke?
                 </div>
             </div>
         </div>

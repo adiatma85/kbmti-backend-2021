@@ -15,6 +15,7 @@ class Event extends Model
 
     public const EVENT_TYPE_SELECT = [
         'OPEN_TENDER'  => 'Open Tender',
+        'KEPANITIAAN' => 'Kepanitiaan',
         'NORMAL_EVENT' => 'Normal Event',
     ];
 
@@ -57,5 +58,30 @@ class Event extends Model
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    // Getter for Event Type Attributes
+    public function getEventTypeAttribute($value){
+        switch($value){
+            case 'NORMAL_EVENT':
+                return "Normal Event";
+                break;
+            case "KEPANITIAAN":
+                return "Kepanitiaan";
+                break;
+            case "OPEN_TENDER":
+                return "Open Tender";
+                break;
+        }
+    }
+
+    // Relation to eventRegistration
+    public function eventRegistrations(){
+        return $this->hasMany(EventRegistration::class, 'event_id');
+    }
+
+    // Relation to eventField
+    public function eventFields(){
+        return $this->hasMany(EventField::class, 'event_id');
     }
 }

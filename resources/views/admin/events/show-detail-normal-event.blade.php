@@ -1,42 +1,41 @@
 @extends('layouts.admin')
 @section('content')
-@can('event_create')
+{{-- Add ke event Registration tapi baru lagi view nya! --}}
+{{-- Dibedain antaranya yang normal event sama yang kepanitiaan! --}}
+@can('event_registration_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route('admin.events.create') }}">
-                {{ trans('global.add') }} {{ trans('cruds.event.title_singular') }}
+            <a class="btn btn-success" href="{{ route('admin.event-registrations.customCreate', [
+                'eventId' => $event->id
+            ]) }}">
+                {{ trans('global.add') }} Pendaftar
             </a>
         </div>
     </div>
 @endcan
 <div class="card">
     <div class="card-header">
-        {{ trans('cruds.event.title_singular') }} {{ trans('global.list') }}
+        <div class="row">
+            {{ trans('global.list_pendaftar_event') }} : <b> {{ $event->name ?? "Ini Nama Event" }} </b>
+        </div>
     </div>
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class=" table table-bordered table-striped table-hover datatable datatable-Event">
+            <table class=" table table-bordered table-striped table-hover datatable datatable-EventRegistration">
                 <thead>
                     <tr>
                         <th width="10">
 
                         </th>
                         <th>
-                            {{ trans('cruds.event.fields.id') }}
+                            {{ trans('cruds.eventRegistration.fields.id') }}
                         </th>
-                        <th>
-                            {{ trans('cruds.event.fields.name') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.event.fields.description') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.event.fields.event_type') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.event.fields.expired_date') }}
-                        </th>
+                        @foreach ($event->eventFields as $field)
+                            <th>
+                                {{ $field->name }}
+                            </th>    
+                        @endforeach
                         <th>
                             &nbsp;
                         </th>
@@ -47,62 +46,45 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
-                        <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
-                        <td>
-                            <select class="search" strict="true">
-                                <option value>{{ trans('global.all') }}</option>
-                                @foreach(App\Models\Event::EVENT_TYPE_SELECT as $key => $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                        </td>
+                        @foreach ($event->eventFields as $field)
+                            <td>
+                                <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                            </td>
+                        @endforeach
                         <td>
                         </td>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($events as $key => $event)
-                        <tr data-entry-id="{{ $event->id }}">
+                    @foreach($event->eventRegistrations as $item)
+                        <tr data-entry-id="{{$item->id}}">
                             <td>
 
                             </td>
                             <td>
-                                {{ $event->id ?? '' }}
+                                {{$item->id}}
                             </td>
+                            @foreach ($item->eventFieldResponses as $response)
+                                <td>{{$response->response ?? ''}}</td>
+                            @endforeach
                             <td>
-                                {{ $event->name ?? '' }}
-                            </td>
-                            <td>
-                                {{ $event->description ?? '' }}
-                            </td>
-                            <td>
-                                {{ $event->event_type }}
-                            </td>
-                            <td>
-                                {{ $event->expired_date ?? '' }}
-                            </td>
-                            <td>
-                                @can('event_show')
-                                    <a class="btn btn-xs btn-primary" href="{{ route('admin.events.show', $event->id) }}">
+                                {{-- Menunjukkan detail dari pendaftar --}}
+                                @can('event_registration_show')
+                                    <a class="btn btn-xs btn-primary" href="{{ route('admin.event-registrations.show', $item->id) }}">
                                         {{ trans('global.view') }}
                                     </a>
                                 @endcan
 
-                                @can('event_edit')
-                                    <a class="btn btn-xs btn-info" href="{{ route('admin.events.edit', $event->id) }}">
+                                {{-- Mengedit seseorang --}}
+                                @can('event_registration_edit')
+                                    <a class="btn btn-xs btn-info" href="{{ route('admin.event-registrations.edit', $item->id) }}">
                                         {{ trans('global.edit') }}
                                     </a>
                                 @endcan
 
-                                @can('event_delete')
-                                    <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                {{-- Menghapus orangnya --}}
+                                @can('event_registration_delete')
+                                    <form action="{{ route('admin.event-registrations.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
@@ -127,11 +109,11 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('event_delete')
+@can('event_registration_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
-    url: "{{ route('admin.events.massDestroy') }}",
+    url: "{{ route('admin.event-registrations.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
       var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
@@ -162,7 +144,7 @@
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   });
-  let table = $('.datatable-Event:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  let table = $('.datatable-EventRegistration:not(.ajaxTable)').DataTable({ buttons: dtButtons })
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();

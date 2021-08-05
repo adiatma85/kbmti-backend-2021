@@ -309,4 +309,6 @@ return [
     'team-members'                   => 'Team members',
     'calendar'                       => 'Calendar',
     'messenger'                      => 'Messenger',
+    // Custom made
+    'list_pendaftar_event'                 => 'List Pendaftar Event', 
 ];
